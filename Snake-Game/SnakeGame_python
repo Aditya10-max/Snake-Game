@@ -1,0 +1,32 @@
+
+import pygame
+import sys
+
+pygame.init()
+
+width, height = 700, 800
+fps = 10
+
+screen = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Snake Game")
+
+clock = pygame.time.Clock()
+
+running = True
+
+background = (30, 20, 15) # color
+
+while running:
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    screen.fill(background)
+
+    pygame.display.update()
+    clock.tick(fps)
+
+pygame.quit()
+sys.exit()
+
