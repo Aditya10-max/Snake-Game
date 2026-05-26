@@ -4,17 +4,21 @@ import sys
 
 pygame.init()
 
-width, height = 700, 800
+width, height = 700, 800 #window
 fps = 10
 
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snake Game")
-
 clock = pygame.time.Clock()
 
 running = True
 
 background = (30, 20, 15) # color
+s_color=(0,0,155)
+Snake=[(5,6),(5,5),(5,4)]# bode--> decreasing --> body follows head , y same (x,y)
+        # head ,body ,tail
+ceil_width,ceil_height=20,20      
+
 
 while running:
 
@@ -23,6 +27,12 @@ while running:
             running = False
 
     screen.fill(background)
+    for segment in Snake:
+        x=segment[0]#ceil_width
+        y=segment[1]#ceil_height
+        area=(x,y,ceil_width,ceil_height)
+
+        pygame.draw.rect(screen,s_color,area)
 
     pygame.display.update()
     clock.tick(fps)
