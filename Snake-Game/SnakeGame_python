@@ -17,22 +17,31 @@ background = (30, 20, 15) # color
 s_color=(0,0,155)
 Snake=[(5,6),(5,5),(5,4)]# bode--> decreasing --> body follows head , y same (x,y)
         # head ,body ,tail
+
+dx,dy=1,0        
 ceil_width,ceil_height=20,20      
 
 
 while running:
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
     screen.fill(background)
+
+    head_x=Snake[0][0]+dx
+    head_y=Snake[0][1]+dy
+    new_head=(head_x,head_y)
+    Snake.insert(0,new_head)
+    Snake.pop()
+
     for segment in Snake:
-        x=segment[0]#ceil_width
-        y=segment[1]#ceil_height
+        x=segment[0]+ceil_width
+        y=segment[1]+ceil_height
         area=(x,y,ceil_width,ceil_height)
 
         pygame.draw.rect(screen,s_color,area)
+
 
     pygame.display.update()
     clock.tick(fps)
