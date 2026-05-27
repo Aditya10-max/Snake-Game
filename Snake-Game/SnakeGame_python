@@ -1,6 +1,7 @@
 
 import pygame
 import sys
+import random
 
 pygame.init()
 
@@ -15,12 +16,17 @@ running = True
 
 background = (30, 20, 15) # color
 s_color=(0,0,155)
+f_color=(255,0,0)
 Snake=[(5,6),(5,5),(5,4)]# bode--> decreasing --> body follows head , y same (x,y)
         # head ,body ,tail
 
 dx,dy=1,0        
 ceil_width,ceil_height=20,20      
 
+food_x=random.randint(0,40)
+food_y=random.randint(0,40)
+
+new_food=(food_x,food_y)
 
 while running:
     for event in pygame.event.get():
@@ -39,19 +45,34 @@ while running:
                 dx,dy= 1,0
 
     screen.fill(background)
-
+    # Snake
     head_x=Snake[0][0]+dx
     head_y=Snake[0][1]+dy
     new_head=(head_x,head_y)
     Snake.insert(0,new_head)
-    Snake.pop()
+    
 
     for segment in Snake:
         x=segment[0]+ceil_width
         y=segment[1]+ceil_height
-        area=(x,y,ceil_width,ceil_height)
+        S_area=(x,y,ceil_width,ceil_height)
 
-        pygame.draw.rect(screen,s_color,area)
+        pygame.draw.rect(screen,s_color,S_area)
+
+    # food
+    if new_head==new_food:
+        food_x=random.randint(0,40)
+        food_y=random.randint(0,40)
+
+        new_food=(food_x,food_y)
+    else:
+        Snake.pop()
+
+    p=new_food[0]*ceil_width
+    q=new_food[1]*ceil_height
+
+    f_area=(p,q,ceil_width,ceil_height)
+    pygame.draw.rect(screen,f_color,f_area)
 
 
     pygame.display.update()
