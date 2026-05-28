@@ -6,7 +6,7 @@ import random
 pygame.init()
 
 width, height = 700, 800 #window
-fps = 50
+fps = 10
 
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snake Game")
@@ -15,16 +15,16 @@ clock = pygame.time.Clock()
 running = True
 
 background = (30, 20, 15) # color
-s_color=(0,0,155)
+s_color=(0,0,255)
 f_color=(255,0,0)
 Snake=[(5,6),(5,5),(5,4)]# bode--> decreasing --> body follows head , y same (x,y)
         # head ,body ,tail
 
 dx,dy=1,0        
-ceil_width,ceil_height=20,20      
+cell_width,cell_height=20,20      
 
-food_x=random.randint(0,40)
-food_y=random.randint(0,40)
+food_x=random.randint(0,34)
+food_y=random.randint(0,39)
 
 new_food=(food_x,food_y)
 
@@ -37,11 +37,11 @@ while running:
         if event.type==pygame.KEYDOWN:
             if event.key==pygame.K_UP and dy !=1:
                 dx,dy= 0,-1
-            elif event.key==pygame.K_DOWN and dy !=1:
+            elif event.key==pygame.K_DOWN and dy !=-1:
                 dx,dy= 0,1
             elif event.key==pygame.K_LEFT and dx !=1:
                 dx,dy= -1,0
-            elif event.key==pygame.K_RIGHT and dx !=1:
+            elif event.key==pygame.K_RIGHT and dx !=-1:
                 dx,dy= 1,0
 
     screen.fill(background)
@@ -49,29 +49,37 @@ while running:
     head_x=Snake[0][0]+dx
     head_y=Snake[0][1]+dy
     new_head=(head_x,head_y)
+
+    # wall collision
+    if (head_x < 0 or head_x>=35 or head_y<0 or head_y>=40 ):
+        running=False
+    # self collision
+    if new_head in Snake:
+        running=False
+
     Snake.insert(0,new_head)
     
 
     for segment in Snake:
-        x=segment[0]+ceil_width
-        y=segment[1]+ceil_height
-        S_area=(x,y,ceil_width,ceil_height)
+        x=segment[0]*cell_width
+        y=segment[1]*cell_height
+        S_area=(x,y,cell_width,cell_height)
 
         pygame.draw.rect(screen,s_color,S_area)
 
     # food
     if new_head==new_food:
-        food_x=random.randint(0,40)
-        food_y=random.randint(0,40)
+        food_x=random.randint(0,34)
+        food_y=random.randint(0,39)
 
         new_food=(food_x,food_y)
     else:
         Snake.pop()
 
-    p=new_food[0]*ceil_width
-    q=new_food[1]*ceil_height
+    p=new_food[0]*cell_width
+    q=new_food[1]*cell_height
 
-    f_area=(p,q,ceil_width,ceil_height)
+    f_area=(p,q,cell_width,cell_height)
     pygame.draw.rect(screen,f_color,f_area)
 
 
@@ -80,5 +88,4 @@ while running:
 
 pygame.quit()
 sys.exit()
-
 
