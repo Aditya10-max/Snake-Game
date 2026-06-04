@@ -13,22 +13,28 @@ pygame.display.set_caption("Snake Game")
 clock = pygame.time.Clock()
 
 score=0
-font=t=pygame.font.SysFont(None,40)
+font=pygame.font.SysFont(None,40)
 
 running = True
+game_over=False
 
 background = (30, 20, 15) # color
 s_color=(0,0,255)
 f_color=(255,0,0)
 score_color=(255,255,255)
 
-Snake=[(5,6),(5,5),(5,4)]# bode--> decreasing --> body follows head , y same (x,y)
+snake=[(5,6),(5,5),(5,4)]# bode--> decreasing --> body follows head , y same (x,y)
         # head ,body ,tail
-score_size=(15,15)
+
+cell_width,cell_height=20,20
+score_txt_size  =(15,15)
+over_txt_size   =(350,300)
+final_txt_size  =(350,350)  
+restart_txt_size=(350,450)  
+quit_txt_size   =(350,500)     
 
 dx,dy=1,0        
-cell_width,cell_height=20,20      
-
+   
 food_x=random.randint(0,34)
 food_y=random.randint(0,39)
 
@@ -36,11 +42,12 @@ new_food=(food_x,food_y)
 
 while running:
     for event in pygame.event.get():
-
+            #quit
         if event.type == pygame.QUIT:
             running = False
+            #movement
+        if not game_over and event.type==pygame.KEYDOWN:
 
-        if event.type==pygame.KEYDOWN:
             if event.key==pygame.K_UP and dy !=1:
                 dx,dy= 0,-1
             elif event.key==pygame.K_DOWN and dy !=-1:
@@ -50,50 +57,83 @@ while running:
             elif event.key==pygame.K_RIGHT and dx !=-1:
                 dx,dy= 1,0
 
+            #restart and quit
+        if game_over and event.type==pygame.KEYDOWN:
+            if event.key==pygame.K_r:
+
+                    snake=[(5,6),(5,5),(5,4)]
+
+                    score=0
+
+                    dx,dy=1,0        
+            
+                    food_x=random.randint(0,34)
+                    food_y=random.randint(0,39)
+                    new_food=(food_x,food_y)   
+
+                    game_over=False
+
+            elif event.key==pygame.K_q:
+                running=False
 
     screen.fill(background)
-    # Snake
-    head_x=Snake[0][0]+dx
-    head_y=Snake[0][1]+dy
-    new_head=(head_x,head_y)
+    if not game_over:
+        # Snake_increase
+        head_x=snake[0][0]+dx
+        head_y=snake[0][1]+dy
+        new_head=(head_x,head_y)
 
-    # wall collision
-    if (head_x < 0 or head_x>=35 or head_y<0 or head_y>=40 ):
-        running=False
-    # self collision
-    if new_head in Snake:
-        running=False
+        # wall collision
+        if (head_x < 0 or head_x>=35 or head_y<0 or head_y>=40 ):
+            game_over=True
+        # self collision
+        elif new_head in snake:
+            game_over=True
 
-    Snake.insert(0,new_head)
-    
+        else: 
+            snake.insert(0,new_head)
+                # food
+            if new_head==new_food:
 
-    for segment in Snake:
-        x=segment[0]*cell_width
-        y=segment[1]*cell_height
-        S_area=(x,y,cell_width,cell_height)
+                    score+=1
 
-        pygame.draw.rect(screen,s_color,S_area)
+                    food_x=random.randint(0,34)
+                    food_y=random.randint(0,39)
 
-    # food
-    if new_head==new_food:
+                    new_food=(food_x,food_y)
 
-        score+=1
+            else: snake.pop() 
+               
+        #draw_snake
+    for segment in snake:
+            x=segment[0]*cell_width
+            y=segment[1]*cell_height
+            S_area=(x,y,cell_width,cell_height)
 
-        food_x=random.randint(0,34)
-        food_y=random.randint(0,39)
+            pygame.draw.rect(screen,s_color,S_area)
 
-        new_food=(food_x,food_y)
-    else:
-        Snake.pop()
-
+        #draw_food
     p=new_food[0]*cell_width
     q=new_food[1]*cell_height
 
     f_area=(p,q,cell_width,cell_height)
     pygame.draw.rect(screen,f_color,f_area)
 
-    score_text=font.render(f"Score:{score}",True,score_color)
-    screen.blit(score_text,score_size)
+        #draw_score
+    score_txt=font.render(f"Score:{score}",True,score_color)
+    screen.blit(score_txt,score_txt_size)
+        
+    if game_over:
+            over_txt=font.render("Game Over",True,score_color)
+            final_txt=font.render(f"Final score:{score}",True,score_color)          
+            restart_txt=font.render("press r to restart",True,score_color)
+            quit_txt=font.render("press q to quit",True,score_color)
+
+            screen.blit(over_txt,over_txt_size)   
+            screen.blit(final_txt,final_txt_size)        
+            screen.blit(restart_txt,restart_txt_size)
+            screen.blit(quit_txt,quit_txt_size)
+        
 
     pygame.display.update()
     clock.tick(fps)
