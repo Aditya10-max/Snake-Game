@@ -4,34 +4,43 @@ import sys
 import random
 
 pygame.init()
+pygame.mixer.init()
 
 width, height = 700, 800 #window
-fps = 10
+fps = 5
 
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snake Game")
 clock = pygame.time.Clock()
 
 score=0
+high_score=0
+growth=0
 font=pygame.font.SysFont(None,40)
 
 running = True
 game_over=False
 
-background = (30, 20, 15) # color
-s_color=(0,0,255)
-f_color=(255,0,0)
-score_color=(255,255,255)
+background  = (30, 20, 15) # color
+s_color     =(0,0,255)
+f_color     =(255,0,0)
+score_color =(255,255,255)
 
-snake=[(5,6),(5,5),(5,4)]# bode--> decreasing --> body follows head , y same (x,y)
-        # head ,body ,tail
+# bode--> decreasing --> body follows head , y same (x,y)
+snake=[(5,6),(5,5),(5,4)]
+      # head ,body ,tail
+
+        # music        
+game_loop_sound=pygame.mixer.Sound(r"c:\Users\ASUS\Downloads\bg_music.wav")
+
 
 cell_width,cell_height=20,20
-score_txt_size  =(15,15)
-over_txt_size   =(350,300)
-final_txt_size  =(350,350)  
-restart_txt_size=(350,450)  
-quit_txt_size   =(350,500)     
+score_txt_size      =(15,15)
+over_txt_size       =(350,300)
+final_txt_size      =(350,350)  
+high_score_txt_size =(350,400)
+restart_txt_size    =(350,450)  
+quit_txt_size       =(350,500)     
 
 dx,dy=1,0        
    
@@ -41,6 +50,7 @@ food_y=random.randint(0,39)
 new_food=(food_x,food_y)
 
 while running:
+    game_loop_sound.play(-1)
     for event in pygame.event.get():
             #quit
         if event.type == pygame.QUIT:
@@ -64,7 +74,7 @@ while running:
                     snake=[(5,6),(5,5),(5,4)]
 
                     score=0
-
+                    fps=5
                     dx,dy=1,0        
             
                     food_x=random.randint(0,34)
@@ -94,15 +104,19 @@ while running:
             snake.insert(0,new_head)
                 # food
             if new_head==new_food:
-
+                
                     score+=1
+                    growth+=3
+                    fps+=5
 
                     food_x=random.randint(0,34)
                     food_y=random.randint(0,39)
 
                     new_food=(food_x,food_y)
 
-            else: snake.pop() 
+            # growth increase
+            if growth>0: growth-=1
+            else:    snake.pop() 
                
         #draw_snake
     for segment in snake:
@@ -124,15 +138,21 @@ while running:
     screen.blit(score_txt,score_txt_size)
         
     if game_over:
+            if score>high_score:
+                high_score=score
+
             over_txt=font.render("Game Over",True,score_color)
-            final_txt=font.render(f"Final score:{score}",True,score_color)          
+            final_txt=font.render(f"Final score :{score}",True,score_color) 
+            high_score_text=font.render(f"High score :{high_score}",True,score_color)         
             restart_txt=font.render("press r to restart",True,score_color)
             quit_txt=font.render("press q to quit",True,score_color)
 
             screen.blit(over_txt,over_txt_size)   
-            screen.blit(final_txt,final_txt_size)        
+            screen.blit(final_txt,final_txt_size)  
+            screen.blit(high_score_text,high_score_txt_size)      
             screen.blit(restart_txt,restart_txt_size)
             screen.blit(quit_txt,quit_txt_size)
+    
         
 
     pygame.display.update()
